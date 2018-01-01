@@ -1,5 +1,6 @@
 import numpy as np
-import math
+import pandas as pd
+import pylab
 c=np.concatenate
 o=np.outer
 
@@ -75,6 +76,14 @@ Q11101 = c(o(Q1110, Q1))
 Q11110 = c(o(Q1111, Q0))
 Q11111 = c(o(Q1111, Q1))
 
+## Diagonal basis
+Q_plus=np.array([1, 1])/np.sqrt(2)
+Q_minus=np.array([1, -1])/np.sqrt(2)
+
+## Circular basis
+Q_clock=np.array([1, 1j])/np.sqrt(2)
+Q_anticlock=np.array([1, -1j])/np.sqrt(2)
+
 ## Identity matrices
 I2 = np.identity(2)
 I4 = np.identity(2**2)
@@ -120,11 +129,43 @@ def Hadamard32(n):
         return h32.dot(n)
 
 def CNOT(n):
+        """CNOT gate on 2-Qubit system with control qubit = 1 and target qubit = 0"""
         x=np.copy(I4)
         t=np.copy(x[2,])
         x[2,]=x[3,]
         x[3,]=t
         return x.dot(n)
+
+def CNOT2_10(n):
+        """CNOT gate on 2-Qubit system with control qubit = 0 and target qubit = 1"""
+        H=Hadamard(I2)
+        x=CNOT(I4)
+        y=np.kron(H, H)
+        return y.dot(x).dot(y).dot(n)
+        
+def CNOT3_01(n):
+        """CNOT gate on 3-Qubit system with control qubit = 0 and target qubit = 1"""
+        return (np.kron(CNOT(I4), I2)).dot(n)
+
+def CNOT3_02(n):
+        """CNOT gate on 3-Qubit system with control qubit = 0 and target qubit = 2"""
+        return np.array(([1., 0., 0., 0., 0., 0., 0., 0.], [0., 1., 0., 0., 0., 0., 0., 0.], [0., 0., 1., 0., 0., 0., 0., 0.], [0., 0., 0., 1., 0., 0., 0., 0.], [0., 0., 0., 0., 0., 1., 0., 0.], [0., 0., 0., 0., 1., 0., 0., 0.], [0., 0., 0., 0., 0., 0., 0., 1.], [0., 0., 0., 0., 0., 0., 1., 0.])).dot(n)
+
+def CNOT3_10(n):
+        """CNOT gate on 3-Qubit system with control qubit = 1 and target qubit = 0"""
+        return np.kron(CNOT2_10(I4), I2).dot(n)
+
+def CNOT3_12(n):
+        """CNOT gate on 3-Qubit system with control qubit = 1 and target qubit = 2"""
+        return np.kron(I2, CNOT(I4)).dot(n)
+
+def CNOT3_20(n):
+        """CNOT gate on 3-Qubit system with control qubit = 2 and target qubit = 0"""
+        return np.array(([1., 0., 0., 0., 0., 0., 0., 0.], [0., 0., 0., 0., 0., 1., 0., 0.], [0., 0., 1., 0., 0., 0., 0., 0.], [0., 0., 0., 0., 0., 0., 0., 1.], [0., 0., 0., 0., 1., 0., 0., 0.], [0., 1., 0., 0., 0., 0., 0., 0.], [0., 0., 0., 0., 0., 0., 1., 0.], [0., 0., 0., 1., 0., 0., 0., 0.])).dot(n)
+
+def CNOT3_21(n):
+        """CNOT gate on 3-Qubit system with control qubit = 2 and target qubit = 1"""
+        return np.kron(I2, CNOT2_10(I4)).dot(n)
 
 def PauliX_4(n):
         """ This represents the 4X4 pauliX matrix, with n as a 2-qubit system"""
@@ -151,9 +192,9 @@ def PauliZ_4(n):
 def Rotate(n, t): return np.array(([np.cos(t), np.sin(t)], [-np.sin(t), np.cos(t)])).dot(n)
 
 def Phase(n): return np.array(([1., 0.], [0., 1.0j])).dot(n)
-def Phase1(n): return np.array(([1., 0.], [0., -1.0j])).dot(n)
+def PhaseDagger(n): return np.array(([1., 0.], [0., -1.0j])).dot(n)
 def T(n): return np.array(([1., 0.], [0., np.exp(1.0j*np.pi/4)])).dot(n)
-def T1(n): return np.array(([1., 0.], [0., np.exp(-1.0j*np.pi/4)])).dot(n)
+def TDagger(n): return np.array(([1., 0.], [0., np.exp(-1.0j*np.pi/4)])).dot(n)
 
 def Toffoli(n):
         """n must be a 8X8 matrix"""
@@ -162,3 +203,44 @@ def Toffoli(n):
         x[6,]=x[7,]
         x[7,]=t
         return x.dot(n)
+
+
+
+## Preparation of the Bell States: {|Beta_00>, |Beta_01>, |Beta_10>, |Beta_11>}
+def bell(Qubit1, Qubit2):
+        """Qubit1 and Qubit2 must be 0 or 1"""
+        h=Hadamard(Q0) if Qubit1==0 else Hadamard(Q1)        
+        x=c(o(h, Q1 if Qubit2==1 else Q0))
+        return CNOT(x)
+
+Beta_00=bell(0, 0)
+Beta_01=bell(0, 1)
+Beta_10=bell(1, 0)
+Beta_11=bell(1, 1)
+
+## An alternate way to prepare the bell states
+def B(Qubit):
+        H=Hadamard(I2)
+        b=CNOT(np.kron(H, I2))
+        return b.dot(Qubit)
+b1=B(Q00)
+b2=B(Q01)
+b3=B(Q10)
+b4=B(Q11)
+
+def measure(n):
+        l=len(n)
+        n=pd.DataFrame(n)
+        values=[]
+        for i in range(l): values+=[abs(n.iloc[i][0])**2, ]
+        p=pd.DataFrame(values).T
+        if l==2: p.columns=["0", "1"]
+        elif l==2**2: p.columns=["00", "01", "10", "11"]
+        elif l==2**3: p.columns=["000","001","010","011","100","101","110","111"]
+        elif l==2**4: p.columns=["0000","0001","0010","0011","0100","0101","0110","0111","1000","1001","1010","1011","1100","1101","1110","1111"]
+        else: p.columns=["00000","00001","00010","00011","00100","00101","00110","00111","01000","01001","01010","01011","01100","01101","01110","01111","10000","10001","10010","10011","10100","10101","10110","10111","11000","11001","11010","11011","11100","11101","11110","11111"]
+        print(p)
+        p.plot.bar()
+        pylab.xlabel("Qubits")
+        pylab.ylabel("Probabilitis")
+        pylab.show()
