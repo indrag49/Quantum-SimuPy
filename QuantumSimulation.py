@@ -167,6 +167,9 @@ def CNOT3_21(n):
         """CNOT gate on 3-Qubit system with control qubit = 2 and target qubit = 1"""
         return np.kron(I2, CNOT2_10(I4)).dot(n)
 
+def CNOT4_12(n): return np.kron(CNOT3_12(I8), I2)
+def CNOT5_12(n): return np.kron(CNOT4_12(I16), I2)
+
 def PauliX_4(n):
         """ This represents the 4X4 pauliX matrix, with n as a 2-qubit system"""
         p=PauliX(I2)
@@ -189,6 +192,9 @@ def PauliZ_4(n):
         p4=c([x, y])
         return p4.dot(n)
 
+def cPauliY(n): return np.array(([1., 0., 0., 0.], [0., 1., 0., 0.], [0., 0., 0., -1.0j], [0., 0., 1.0j, 0.])).dot(n)
+def cPauliZ(n): return np.array(([1., 0., 0., 0.], [0., 1., 0., 0.], [0., 0., 1., 0.], [0., 0., 0., -1.])).dot(n)
+
 def Rotate(n, t): return np.array(([np.cos(t), np.sin(t)], [-np.sin(t), np.cos(t)])).dot(n)
 
 def Phase(n): return np.array(([1., 0.], [0., 1.0j])).dot(n)
@@ -196,15 +202,33 @@ def PhaseDagger(n): return np.array(([1., 0.], [0., -1.0j])).dot(n)
 def T(n): return np.array(([1., 0.], [0., np.exp(1.0j*np.pi/4)])).dot(n)
 def TDagger(n): return np.array(([1., 0.], [0., np.exp(-1.0j*np.pi/4)])).dot(n)
 
+def R(n, Lambda): return np.array(([1., 0.], [0., exp(1j*Lambda)])).dot(n)
+
+def SWAP(n):
+        """n is a 4X4 matrix"""
+        x=np.copy(I4)
+        t=np.copy(x[1, ])
+        x[1,]=x[2,]
+        x[2,]=t
+        return x.dot(n)
 def Toffoli(n):
         """n must be a 8X8 matrix"""
-        x=I8
+        x=np.copy(I8)
         t=np.copy(x[6,])
         x[6,]=x[7,]
         x[7,]=t
         return x.dot(n)
-
-
+def Fredkin(n):
+        """n must be a 8X8 matrix"""
+        x=np.copy(I8)
+        t=np.copy(x[5,])
+        x[5,]=x[6,]
+        x[6,]=t
+        return x.dot(n)
+def Ising(n, phi):
+        pi=np.pi
+        e=np.exp
+        return np.array(([1., 0., 0., e(1j*(phi-pi/2))], [0., 1., -1.0j, 0.], [0., -1.0j, 1., 0.], [e(1j*(-phi-pi/2)), 0., 0., 1.])).dot(n)
 
 ## Preparation of the Bell States: {|Beta_00>, |Beta_01>, |Beta_10>, |Beta_11>}
 def bell(Qubit1, Qubit2):
@@ -223,10 +247,10 @@ def B(Qubit):
         H=Hadamard(I2)
         b=CNOT(np.kron(H, I2))
         return b.dot(Qubit)
-b1=B(Q00)
-b2=B(Q01)
-b3=B(Q10)
-b4=B(Q11)
+b00=B(Q00)
+b01=B(Q01)
+b10=B(Q10)
+b11=B(Q11)
 
 def measure(n):
         l=len(n)
@@ -239,8 +263,10 @@ def measure(n):
         elif l==2**3: p.columns=["000","001","010","011","100","101","110","111"]
         elif l==2**4: p.columns=["0000","0001","0010","0011","0100","0101","0110","0111","1000","1001","1010","1011","1100","1101","1110","1111"]
         else: p.columns=["00000","00001","00010","00011","00100","00101","00110","00111","01000","01001","01010","01011","01100","01101","01110","01111","10000","10001","10010","10011","10100","10101","10110","10111","11000","11001","11010","11011","11100","11101","11110","11111"]
-        print(p)
-        p.plot.bar()
+        return p
+
+def plot_measure(n):
+        n.plot.bar()
         pylab.xlabel("Qubits")
         pylab.ylabel("Probabilitis")
         pylab.show()
