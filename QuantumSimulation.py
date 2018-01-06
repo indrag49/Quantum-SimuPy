@@ -269,4 +269,5 @@ def plot_measure(n):
         n.plot.bar()
         pylab.xlabel("Qubits")
         pylab.ylabel("Probabilitis")
+        pylab.title("Probability Distribution")
         pylab.show()
