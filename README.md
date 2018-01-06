@@ -1,5 +1,5 @@
 # Quantum-SimuPy
-A Quantum Simulator written in Python. I shall update the programs with time.
+A Quantum Simulator written in Python. I shall update the codes with time.
 
 # References:
 [1] http://www-reynal.ensea.fr/docs/iq/QC10th.pdf
