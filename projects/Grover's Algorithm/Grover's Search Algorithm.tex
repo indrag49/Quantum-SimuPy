@@ -32,10 +32,10 @@ This project is to compare the simulation of Grover's search algorithm for two q
 \end{abstract}
 
 \section{Introduction}
-Grover's Algorithm, devised by \textit{Lov Grover} in the year 1996, is a quantum search algorithm, that searches through a N-dimensional search space. Instead of searching for the desired element, the algorithm focuses its search on the index of the element, $i$, such that $i \in[0, N)$. The \textit{amplitude amplification trick} is used as a core process here and the algorithm takes $\mathcal{O}$($\sqrt{N}$) steps to achieve its goal compared to  $\mathcal{O}$(N) steps taken by the classical counterpart.
+Grover's Algorithm, devised by \textit{Lov Grover} in the year 1996, is a quantum search algorithm, that searches through a N-dimensional search space. Instead of searching for the desired element, the algorithm focuses its search on the index of the element, $i$, such that $i \in[0, N-1]$. The \textit{amplitude amplification trick} is used as a core process here and the algorithm takes $\mathcal{O}$($\sqrt{N}$) steps to achieve its goal compared to  $\mathcal{O}$(N) steps taken by the classical counterpart.
 
 \section{The Problem}
-Suppose there is a database with $N$ unsorted elements. We want to locate the index an element with a desired property, marked \textit{\textbf{w}} from this database. We assume the value of N in such a way that the index can be stored in $n=\log_2{N}$ bits, i.e., $N=2^n$. This search problem has M solutions such that $1<=M<=N$. For a classical search, $M={N \over 2}$ on average and $M=N$ for the worst case scenario. But, on a quantum computer, $M$ is roughly $\sqrt{N}$. Thse Grover's search algorithm provides a quadratic speedup, which is  a time-saver for long lists, i.e for problems which may take million of years for the most powerful classical supercomputers in our possession, to solve.
+Suppose there is a database with $N$ unsorted elements. We want to locate the index an element with a desired property, marked \textit{\textbf{w}} from this database. We assume the value of N in such a way that the index can be stored in $n=\log_2{N}$ bits, i.e., $N=2^n$. This search problem has M solutions such that $1<=M<=N$. For a classical search, $M={N \over 2}$ on average and $M=N$ for the worst case scenario. But, on a quantum computer, $M$ is roughly $\sqrt{N}$. Grover's search algorithm provides a quadratic speedup, which is  a time-saver for long lists, i.e for problems which may take million of years for the most powerful classical supercomputers in our possession, to solve.
 
 \section{What Is The Oracle?}
 The convinient way to encode the given list of $N$ terms is by a function $f$ such that $f(x)=\delta_{xw}$ where $(x, w) \in [0, N-1]$. 
@@ -78,7 +78,7 @@ Besides the oracle, we also need another reflection operator, Grover's Diffusion
 \noindent\makebox[\textwidth]{\includegraphics[scale=0.6]{Grover}}%
 \caption{Grover's Algorithm Circuit [Figure from Wikipedia]}
 \end{figure}
-We now state the Grover's iterator.After preparation of the superposition state we apply the oracle reflection $U_w$ to the state, which corresponds the reflection of the state to $-\ket{w}$.
+We now state the Grover's iterator. After preparation of the superposition state we apply the oracle reflection $U_w$ to the state, which corresponds the reflection of the state to $-\ket{w}$.
 \begin{center}
 $U_w \ket{s} = (I-2\ket{w} \bra{w})\ket{s}$\par
 $=I\ket{s}-2\ket{w}\braket{w|s}$\par
@@ -93,8 +93,8 @@ $=2\ket{s}-\ket{s}-{4\over \sqrt{N}}{1\over \sqrt{N}}\ket{s}+{2\over \sqrt{N}}\k
 $=\ket{s}-{4\over \sqrt{N}}\ket{s}+{2\over \sqrt{N}}\ket{w}$\par
 $={{N-4}\over N}\ket{s}+{2\over \sqrt{N}}\ket{w}$
 \end{center}
-This two reflections corresponds to a rotation, that is rotates the initial state $\ket{s}$ towards the winner $\ket{w}$. Since the average amplitude was lowered by the first reflection, the second transformation boosts the negative amplitude of $\ket{w}$ to rougly three times its original value and lowers the other amplitudes.\par
-We see that we need to apply the Grover's iterator roughly $\sqrt{N}$ times to concentrate on the winner. We note that in our simulations, we have considered $n=2$, i.e $N=4$. So ${{N-4}\over N}\ket{s}+{2\over \sqrt{N}}\ket{w}=\ket{w}$ for$N=4$. The single application of the Grover's iterator returns us the winner index.
+These two reflections correspond to a rotation, that is, rotate the initial state $\ket{s}$ towards the winner $\ket{w}$. Since the average amplitude was lowered by the first reflection, the second transformation boosts the negative amplitude of $\ket{w}$ to rougly three times its original value and lowers the other amplitudes.\par
+We see that we need to apply the Grover's iterator roughly $\sqrt{N}$ times to concentrate on the winner. We note that in our simulations, we have considered $n=2$, i.e $N=4$. So ${{N-4}\over N}\ket{s}+{2\over \sqrt{N}}\ket{w}=\ket{w}$ for $N=4$. The single application of the Grover's iterator returns us the winner index.
 \section{Comparisons for Circuits for $n=2$, i.e, $N=4$}
 As $N=4$, there are 4 possible oracles $U_f$, one for each choice of the winner. The first part of the examples creates the superposition state $\ket{s}$, the second part applies the oracle $U_f$ on $\ket{s}$ and the last part applies $U_s$ on $U_f \ket{s}$.
 \subsection{A=00}
