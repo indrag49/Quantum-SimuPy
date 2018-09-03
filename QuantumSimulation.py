@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import pylab
+import random
 c=np.concatenate
 o=np.outer
 
