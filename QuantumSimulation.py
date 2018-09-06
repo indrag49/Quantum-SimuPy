@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import pylab
 import random
+
 c=np.concatenate
 o=np.outer
 
@@ -231,7 +232,14 @@ def Ising(n, phi):
         e=np.exp
         return np.array(([1., 0., 0., e(1j*(phi-pi/2))], [0., 1., -1.0j, 0.], [0., -1.0j, 1., 0.], [e(1j*(-phi-pi/2)), 0., 0., 1.])).dot(n)
 
-def Walsh(n): return Hadamard.dot(n)
+## Preparation of the Bell States: {|Beta_00>, |Beta_01>, |Beta_10>, |Beta_11>}
+def bell(Qubit1, Qubit2):
+        """Qubit1 and Qubit2 must be 0 or 1"""
+        h=Hadamard(Q0) if Qubit1==0 else Hadamard(Q1)        
+        x=c(o(h, Q1 if Qubit2==1 else Q0))
+        return CNOT(x)
+    
+def Walsh(n): return Hadamard(n)
 
 def Walsh4(n):
     h=Hadamard(I2)
@@ -243,12 +251,15 @@ def Walsh8(n):
     w=np.kron(np.kron(h, h), h)
     return w.dot(n)
 
-## Preparation of the Bell States: {|Beta_00>, |Beta_01>, |Beta_10>, |Beta_11>}
-def bell(Qubit1, Qubit2):
-        """Qubit1 and Qubit2 must be 0 or 1"""
-        h=Hadamard(Q0) if Qubit1==0 else Hadamard(Q1)        
-        x=c(o(h, Q1 if Qubit2==1 else Q0))
-        return CNOT(x)
+def Walsh16(n):
+    h=Hadamard(I2)
+    w=np.kron(np.kron(np.kron(h, h), h), h)
+    return w.dot(n)
+
+def Walsh32(n):
+    h=Hadamard(I2)
+    w=np.kron(np.kron(np.kron(np.kron(h, h), h), h), h)
+    return w.dot(n)
 
 Beta_00=bell(0, 0)
 Beta_01=bell(0, 1)
