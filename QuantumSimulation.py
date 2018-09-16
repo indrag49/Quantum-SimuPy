@@ -177,7 +177,7 @@ def Hadamard32(n):
         return h32.dot(n)
 
 def CNOT(n):
-        """CNOT gate on 2-Qubit system with control qubit = 1 and target qubit = 0"""
+        """CNOT gate on 2-Qubit system with control qubit = 0 and target qubit = 1"""
         x=np.copy(I4)
         t=np.copy(x[2,])
         x[2,]=x[3,]
@@ -185,7 +185,7 @@ def CNOT(n):
         return x.dot(n)
 
 def CNOT2_10(n):
-        """CNOT gate on 2-Qubit system with control qubit = 0 and target qubit = 1"""
+        """CNOT gate on 2-Qubit system with control qubit = 1 and target qubit = 0"""
         H=Hadamard(I2)
         x=CNOT(I4)
         y=np.kron(H, H)
