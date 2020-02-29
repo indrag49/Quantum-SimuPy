@@ -2,7 +2,7 @@ from QuantumSimu import *
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
 import math
-from Tkinter import *
+from tkinter import *
 import numpy as np
 
 
@@ -41,7 +41,8 @@ def gqduels(Psi, m, a, b, alpha1, alpha2, beta1, beta2):
         
     Psif=A.dot(Psi)
         
-    return (1+abs(np.conj(Q10).dot(Psif))**2-abs(np.conj(Q01).dot(Psif))**2)/2.
+    #return (1+abs(np.conj(Q10).dot(Psif))**2-abs(np.conj(Q01).dot(Psif))**2)/2.
+    return abs(np.conj(Q10).dot(Psif))**2 + 0.5*abs(np.conj(Q11).dot(Psif))**2
 
 def qduels2(Psi, a, b, alpha1, alpha2, beta1, beta2):
     #The improvement plots do not depend on the beta values
@@ -51,7 +52,7 @@ def qduels2(Psi, a, b, alpha1, alpha2, beta1, beta2):
     C=Ba.dot(Ba.dot(Ab))
     Psi2=C.dot(Psi)
     
-    return (1+abs(np.conj(Q10).dot(Psi2))**2-abs(np.conj(Q01).dot(Psi2))**2)/2
+    return abs(np.conj(Q10).dot(Psi2))**2 + 0.5*abs(np.conj(Q11).dot(Psi2))**2
 
 def qduels3(Psi, a, b, alpha1, alpha2, beta1, beta2):
     #The improvement plots do not depend on the beta values
@@ -61,7 +62,7 @@ def qduels3(Psi, a, b, alpha1, alpha2, beta1, beta2):
     C=Ab.dot(Ba.dot(Ab))
     Psi2=C.dot(Psi)
     
-    return (1+abs(np.conj(Q10).dot(Psi2))**2-abs(np.conj(Q01).dot(Psi2))**2)/2
+    return abs(np.conj(Q10).dot(Psi2))**2 + 0.5*abs(np.conj(Q11).dot(Psi2))**2
 
 def twoPerson():
     Root1=Tk()
@@ -645,8 +646,3 @@ master=Tk()
 B1=Button(master,text="Two Person Duel", bg="red", command=twoPerson)
 B1.pack(side=TOP, fill=X, pady=4, padx=4)
 master.mainloop()       
-
-        
-        
-        
-        
