@@ -7,3 +7,6 @@ A Quantum Simulator written in Python to simulate simple models.
 [2] https://github.com/tvganesh/QCSimulator
 
 [3] https://quantum-computing.ibm.com/
+
+[4] https://github.com/corbett/QuantumComputing
+
